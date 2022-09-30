@@ -1,0 +1,87 @@
+﻿@page "/trade"
+@inject ITradeService tradeService
+@inject ICoinService coinService
+@attribute [Authorize]
+
+<h3>Transaction</h3>
+
+<EditForm Model="trade" OnValidSubmit="SaveTransaction">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group">
+        <label>Coin</label>
+        <InputSelect id="coinName" class="form-control" @bind-Value="trade.Name">
+            @foreach (CoinName coin in CoinName.GetValues(typeof(CoinName)))
+            {
+                <option>@coin</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group">
+        <label>Trade</label>
+        <InputSelect id="coinName" class="form-control" @bind-Value="trade.Type" @bind-Value:event="SelectedTypeChanged">
+            @foreach (TradeType type in TradeType.GetValues(typeof(TradeType)))
+            {
+                <option>@type</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group">
+        <label>Price</label>
+        <InputNumber id="price" @bind-Value="trade.Price" class="form-control" disabled=@IsDisabled></InputNumber>
+    </div>
+    <div class="form-group">
+        <label>Amount</label>
+        <InputNumber id="amount" @bind-Value="trade.Amount" class="form-control"></InputNumber>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</EditForm>
+@lol
+
+@code {
+
+    public bool IsDisabled { get; set; }
+
+    string lol = "";
+
+    public Trade trade = new Trade();
+
+    private async Task SaveTransaction()
+    {
+        await tradeService.AddTradeAsync(trade);
+    }
+
+    private string GetIconPath(string name)
+    {
+        string path = "icons/" + name + ".png";
+        return path;
+    }
+
+    void SelectedTypeChanged(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            if (e.Value.ToString() == TradeType.Claim.ToString())
+            {
+                IsDisabled = true;
+            }
+            else
+            {
+                IsDisabled = false;
+            }
+        }
+    }
+
+    private void TypeChanged()
+    {
+        lol = "lol";
+        if (trade.Type == TradeType.Claim)
+        {
+            IsDisabled = true;
+        }
+        else
+        {
+            IsDisabled = false;
+        }
+    }
+}

@@ -1,0 +1,128 @@
+﻿@page "/coinsummary"
+@inject ITradeService TradeService
+@inject ICoinService CoinService
+@attribute [Authorize]
+
+<h3>CoinSummary</h3>
+
+<div class="bg-dark bg-gradient rounded">
+    @if (CoinService.ChoosenCoin != null)
+    {
+        <table class="table text-light">
+            <tr class="heavy">
+                <td>
+                    Crypto
+                </td>
+                <td>
+                    Name
+                </td>
+                <td>
+                    Amount
+                </td>
+                <td>
+                    Current Price
+                </td>
+                <td>
+                    Average Buy Price
+                </td>
+                <td>
+                    Sum
+                </td>
+                <td>
+                    Profit
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="@GetIconPath(CoinService.ChoosenCoin.Name.ToString())" />
+                </td>
+                <td>
+                    @CoinService.ChoosenCoin.Name
+                </td>
+                <td>
+                    @CoinService.ChoosenCoin.Amount.ToString("0.##")
+                </td>
+                <td>
+                    @CoinService.ChoosenCoin.CurrentPrice.ToString("0.##") $
+                </td>
+                <td>
+                    @CoinService.ChoosenCoin.BuyPrice.ToString("0.##") $
+                </td>
+                <td>
+                    @CoinService.ChoosenCoin.Sum.ToString("0.##") $
+                </td>
+                <td>
+                    @CoinService.ChoosenCoin.Course.ToString("0.##") %
+                </td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <span>Loading Coins...</span>
+    }
+</div>
+<span> </span>
+<h4>Trades:</h4>
+<div>
+    @if (TradeService.PartialTradeList.Count > 0)
+    {
+        <table class="table">
+            <tr class="heavy toprow">
+                <td>
+                    Type
+                </td>
+                <td>
+                    Date
+                </td>
+                <td>
+                    Price
+                </td>
+                <td>
+                    Amount
+                </td>
+                <td>
+                    Sum
+                </td>
+            </tr>
+            @foreach (var trade in TradeService.PartialTradeList)
+            {
+                <tr>
+                    <td>
+                        @trade.Type
+                    </td>
+                    <td>
+                        @trade.TradeDate
+                    </td>
+                    <td>
+                        @trade.Price.ToString("0.##") $
+                    </td>
+                    <td>
+                        @trade.Amount.ToString("0.##") $
+                    </td>
+                    <td>
+                        @trade.TotalPrice.ToString("0.##") $
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <span>Loading Trades...</span>
+    }
+</div>
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await TradeService.ShowCoinTradesAsync(CoinService.ChoosenCoin.Name);
+    }
+
+    private string GetIconPath(string name)
+    {
+        string path = "icons/" + name + ".png";
+        return path;
+    }
+}

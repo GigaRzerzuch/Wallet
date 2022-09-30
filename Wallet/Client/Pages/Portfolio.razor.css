@@ -1,0 +1,18 @@
+﻿.heavy {
+    font-weight: bold;
+}
+
+td {
+    width: 14%;
+}
+
+tr:hover {
+    cursor: pointer;
+    background-color : lightgray;
+}
+
+.toprow:hover {
+    cursor: default;
+    background-color: transparent;
+}
+

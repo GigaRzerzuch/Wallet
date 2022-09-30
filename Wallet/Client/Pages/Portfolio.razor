@@ -1,0 +1,99 @@
+﻿@page "/portfolio"
+@inject ICoinService CoinService
+@inject ITradeService TradeService
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<h3>Portfolio</h3>
+
+@if (CoinService.CoinList.Count > 0)
+{
+    <table class="table">
+        <tr class="heavy toprow">
+            <td>
+                Crypto
+            </td>
+            <td >
+                Name
+            </td>
+            <td>
+                Amount
+            </td>
+            <td>
+                Current Price
+            </td>
+            <td>
+                Average Buy Price
+            </td>
+            <td>
+                Sum
+            </td>
+            <td>
+                Profit
+            </td>
+        </tr>
+        @foreach (var coin in CoinService.CoinList)
+        {
+            <tr @onclick="() => GoToCoin(coin)">
+                <td>
+                    @foreach (CoinName coinName in CoinName.GetValues(typeof(CoinName)))
+                    {
+                       if (coin.Name == coinName) 
+                        {
+                            <img src="@GetIconPath(coin.Name.ToString())" />
+                        }
+                    }
+                </td>
+                <td>
+                    @coin.Name
+                </td>
+                <td>
+                    @coin.Amount.ToString("0.##")
+                </td>
+                <td>
+                    @if (coin.CurrentPrice == 0)
+                    {
+                       <span>Loading price...</span> 
+                    }    
+                    else
+                    {
+                        <span>@coin.CurrentPrice.ToString("0.##") $ </span>
+                    }
+                </td>
+                <td>
+                    @coin.BuyPrice.ToString("0.##") $
+                </td>
+                <td>
+                    @coin.Sum.ToString("0.##") $
+                </td>
+                <td>
+                    @coin.Course.ToString("0.##") %
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <span>Loading Coins...</span>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await CoinService.GetAllCoinsAsync();
+    }
+
+    string GetIconPath(string name)
+    {
+        string path = "icons/" + name + ".png";
+        return path;
+    }
+
+    void GoToCoin(Coin coin)
+    {
+        CoinService.ChoosenCoin = coin;
+        TradeService.PartialTradeList = TradeService.Trades.Where(trade => trade.Name == coin.Name).ToList();
+        NavigationManager.NavigateTo("/coinsummary");
+    }
+}

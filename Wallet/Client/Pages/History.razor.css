@@ -1,0 +1,26 @@
+﻿.heavy {
+    font-weight: bold;
+}
+
+td {
+    width: 13%;
+}
+
+tr:hover {
+    background-color: lightgray;
+}
+
+.toprow:hover {
+    background-color: transparent;
+}
+
+.delete:hover {
+    cursor: pointer;
+    font-size: 40px;
+}
+
+.delete {
+    font-size: 32px;
+}
+
+

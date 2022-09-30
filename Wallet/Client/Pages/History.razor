@@ -1,0 +1,102 @@
+﻿@page "/history"
+@inject ITradeService TradeService
+@attribute [Authorize]
+
+<h3>History</h3>
+
+@if (TradeService.Trades.Count > 0)
+{
+    <table class="table">
+        <tr class="heavy toprow">
+            <td>
+                Crypto
+            </td>
+            <td>
+                Name
+            </td>
+            <td>
+                Type
+            </td>
+            <td>
+                Date
+            </td>
+            <td>
+                Price
+            </td>
+            <td>
+                Amount
+            </td>
+            <td>
+                Sum
+            </td>
+            <td>
+                Delete
+            </td>
+        </tr>
+        @foreach (var trade in TradeService.Trades)
+        {
+            <tr @onmouseover="() => GetTrade(trade)">
+                <td>
+                    @foreach (CoinName coinName in CoinName.GetValues(typeof(CoinName)))
+                    {
+                        if (trade.Name == coinName)
+                        {
+                            <img src="@GetIconPath(trade.Name.ToString())" />
+                        }
+                    }
+                </td>
+                <td>
+                    @trade.Name
+                </td>
+                <td>
+                    @trade.Type
+                </td>
+                <td>
+                    @trade.TradeDate
+                </td>
+                <td>
+                    @trade.Price.ToString("0.##") $
+                </td>
+                <td>
+                    @trade.Amount.ToString("0.##") $
+                </td>
+                <td>
+                    @trade.TotalPrice.ToString("0.##") $
+                </td>
+                <td>
+                    <span class="oi oi-circle-x delete" aria-hidden="true" @onclick="DeleteTrade"></span>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <span>Loading Trades...</span>
+}
+
+@code {
+    public Trade OnHoverTrade = new Trade();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TradeService.GetUserTradesAsync();
+    }
+
+    private string GetIconPath(string name)
+    {
+        string path = "icons/" + name + ".png";
+        return path;
+    }
+
+    private void GetTrade(Trade trade)
+    {
+        OnHoverTrade = trade;
+    }
+
+    private async Task DeleteTrade()
+    {
+        await TradeService.RemoveTradeAsync(OnHoverTrade.Id);
+        await TradeService.GetUserTradesAsync();
+    }
+}

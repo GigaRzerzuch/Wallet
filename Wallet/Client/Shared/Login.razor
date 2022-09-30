@@ -1,0 +1,41 @@
+﻿@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthService AuthService
+@inject IToastService ToastService
+
+<h3>Login</h3>
+
+<EditForm Model="userLogin" OnValidSubmit="LoginUser">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group">
+        <label>Email</label>
+        <InputText id="email" @bind-Value="userLogin.Email" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>userLogin.Email)" />
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <InputText id="password" @bind-Value="userLogin.Password" class="form-control" type="password"></InputText>
+        <ValidationMessage For="@(()=>userLogin.Password)" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Login</button>
+</EditForm>
+
+@code {
+    UserLogin userLogin = new UserLogin();
+
+    private async Task LoginUser()
+    { 
+        var result = await AuthService.Login(userLogin);
+        if (result.Succes)
+        {
+            await LocalStorage.SetItemAsync<string>("authToken", result.Data);
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            ToastService.ShowSuccess(result.Message);
+        }
+        else
+        {
+            ToastService.ShowError(result.Message);
+        }
+    }
+
+}
