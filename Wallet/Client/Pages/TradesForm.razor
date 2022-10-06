@@ -3,8 +3,6 @@
 @inject ICoinService coinService
 @attribute [Authorize]
 
-<h3>Transaction</h3>
-
 <EditForm Model="trade" OnValidSubmit="SaveTransaction">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="form-group">
@@ -18,7 +16,7 @@
     </div>
     <div class="form-group">
         <label>Trade</label>
-        <InputSelect id="coinName" class="form-control" @bind-Value="trade.Type" @bind-Value:event="SelectedTypeChanged">
+        <InputSelect id="coinName" class="form-control" @bind-Value="tType">
             @foreach (TradeType type in TradeType.GetValues(typeof(TradeType)))
             {
                 <option>@type</option>
@@ -36,15 +34,26 @@
 
     <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </EditForm>
-@lol
 
 @code {
+    private Trade trade = new Trade();
 
-    public bool IsDisabled { get; set; }
+    private bool IsDisabled;
 
-    string lol = "";
-
-    public Trade trade = new Trade();
+    [Parameter]
+    public TradeType tType {
+        get { return trade.Type; }
+        set {
+            trade.Type = value;
+            if (value == TradeType.Claim)
+            {
+                IsDisabled = true;
+            } 
+            else
+            {
+                IsDisabled = false;
+            }
+    } }
 
     private async Task SaveTransaction()
     {
@@ -55,33 +64,5 @@
     {
         string path = "icons/" + name + ".png";
         return path;
-    }
-
-    void SelectedTypeChanged(ChangeEventArgs e)
-    {
-        if (e.Value is not null)
-        {
-            if (e.Value.ToString() == TradeType.Claim.ToString())
-            {
-                IsDisabled = true;
-            }
-            else
-            {
-                IsDisabled = false;
-            }
-        }
-    }
-
-    private void TypeChanged()
-    {
-        lol = "lol";
-        if (trade.Type == TradeType.Claim)
-        {
-            IsDisabled = true;
-        }
-        else
-        {
-            IsDisabled = false;
-        }
     }
 }

@@ -23,6 +23,5 @@ namespace Wallet.Shared.Models
                 return ((CurrentPrice - BuyPrice)/BuyPrice)*100;
             }
         }
-
     }
 }

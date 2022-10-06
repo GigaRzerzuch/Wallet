@@ -3,8 +3,6 @@
 @inject ICoinService CoinService
 @attribute [Authorize]
 
-<h3>CoinSummary</h3>
-
 <div class="bg-dark bg-gradient rounded">
     @if (CoinService.ChoosenCoin != null)
     {
@@ -98,7 +96,7 @@
                         @trade.Price.ToString("0.##") $
                     </td>
                     <td>
-                        @trade.Amount.ToString("0.##") $
+                        @trade.Amount.ToString("0.##") 
                     </td>
                     <td>
                         @trade.TotalPrice.ToString("0.##") $

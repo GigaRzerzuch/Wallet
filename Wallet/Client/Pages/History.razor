@@ -2,8 +2,6 @@
 @inject ITradeService TradeService
 @attribute [Authorize]
 
-<h3>History</h3>
-
 @if (TradeService.Trades.Count > 0)
 {
     <table class="table">
@@ -58,7 +56,7 @@
                     @trade.Price.ToString("0.##") $
                 </td>
                 <td>
-                    @trade.Amount.ToString("0.##") $
+                    @trade.Amount.ToString("0.##") 
                 </td>
                 <td>
                     @trade.TotalPrice.ToString("0.##") $
