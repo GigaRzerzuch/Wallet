@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
-using Wallet.Client.Services;
 
 namespace Wallet.Client
 {
@@ -12,14 +11,11 @@ namespace Wallet.Client
         //lokalna pamięć w przeglądarce
         private readonly ILocalStorageService _localStorageService;
         private readonly HttpClient _http;
-        private readonly ICoinService _coinService;
-        private readonly ITradeService _tradeService;
 
-        public ClientAuthStateProvider(ILocalStorageService localStorageService, HttpClient http, ICoinService coinService)
+        public ClientAuthStateProvider(ILocalStorageService localStorageService, HttpClient http)
         {
             _localStorageService = localStorageService;
             _http = http;
-            _coinService = coinService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -31,15 +27,22 @@ namespace Wallet.Client
 
             if (!string.IsNullOrEmpty(authToken))
             {
-                try
+                if (!await CheckTokenExpDateAsync())
                 {
-                    identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
-                    _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken.Replace("\"", ""));
+                    try
+                    {
+                        identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
+                        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken.Replace("\"", ""));
+                    }
+                    catch (Exception)
+                    {
+                        await _localStorageService.RemoveItemAsync("authToken");
+                        identity = new ClaimsIdentity();
+                    }
                 }
-                catch (Exception)
+                else
                 {
                     await _localStorageService.RemoveItemAsync("authToken");
-                    identity = new ClaimsIdentity();
                 }
             }
 
@@ -49,6 +52,20 @@ namespace Wallet.Client
             NotifyAuthenticationStateChanged(Task.FromResult(state));
 
             return state;
+        }
+
+        private async Task<bool> CheckTokenExpDateAsync()
+        {
+            string authToken = await _localStorageService.GetItemAsStringAsync("authToken");
+            var claims = ParseClaimsFromJwt(authToken);
+            var expiry = claims.Where(claim => claim.Type.Equals("exp")).FirstOrDefault();
+            var datetime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiry.Value));
+
+            if (datetime.UtcDateTime <= DateTime.UtcNow)
+            {
+                return true;
+            }
+            return false;
         }
 
         private byte[] ParseBase64WithoutPadding(string base64)

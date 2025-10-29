@@ -8,17 +8,13 @@
     </div>
 
     <main>
-
-
         <div class="top-row mx-auto">
-                    <AuthorizeView>
-            <Authorized>
-                <h1 class="text-center">Hi, @context.User.Identity.Name. Welcome back</h1>
-             </Authorized>
-        </AuthorizeView>
-
+             <AuthorizeView>
+                <Authorized>
+                    <h1 class="text-center">Hi, @context.User.Identity.Name. Welcome back</h1>
+                 </Authorized>
+            </AuthorizeView>
         </div>
-
         <article class="content px-4">
             @Body
         </article>

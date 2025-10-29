@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using Blazored.LocalStorage;
+using System.Net.Http.Json;
 using Wallet.Shared.Models;
 
 namespace Wallet.Client.Services
@@ -6,10 +7,12 @@ namespace Wallet.Client.Services
     public class AuthService : IAuthService
     {
         private readonly HttpClient _http;
+        private readonly ILocalStorageService _localStorageService;
 
-        public AuthService(HttpClient http)
+        public AuthService(HttpClient http, ILocalStorageService localStorageService)
         {
             _http = http;
+            _localStorageService = localStorageService;
         }
 
         public async Task<ServiceResponse<string>> Login(UserLogin user)
@@ -25,5 +28,6 @@ namespace Wallet.Client.Services
 
             return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }
+
     }
 }

@@ -20,6 +20,5 @@ builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-
 await builder.Build().RunAsync();
 

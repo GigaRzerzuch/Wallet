@@ -1,4 +1,7 @@
 ﻿@page "/"
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
 
 <AuthorizeView>
     <Authorized>
@@ -11,5 +14,8 @@
 </AuthorizeView>
 
 @code{
-
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthStateProvider.GetAuthenticationStateAsync();
+    }
 }

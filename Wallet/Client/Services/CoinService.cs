@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http.Json;
 using Wallet.Shared.Enums;
 using Wallet.Shared.Models;
@@ -9,13 +10,6 @@ namespace Wallet.Client.Services
     {
         private readonly ITradeService _tradeService;
         private readonly HttpClient _http;
-
-        private UriBuilder uriBuilder = new UriBuilder("https://api.coingecko.com/api/v3/simple/price");
-
-        private readonly string[] coingeckoId = {"bitcoin", "ethereum", "usd-coin", "binancecoin", "binance-usd", "cardano", "polkadot", "matic-network", "cosmos",
-                                                "decentraland", "algorand", "evmos", "juno-network", "osmosis", "iota", "helium", "e-money-eur", "secret", "agoric",
-                                                "stargaze"};
-
         public Coin ChoosenCoin { get; set; } = new Coin();
         public List<Coin> CoinList { get; set; } = new List<Coin>();
 
@@ -31,7 +25,6 @@ namespace Wallet.Client.Services
             await InitializeCoinList();
             await GetCurrentPrice();
         }
-
 
         private async Task InitializeCoinList()
         {
@@ -55,7 +48,7 @@ namespace Wallet.Client.Services
                             dummyCoin.Amount += trade.Amount;
                         }
                         else if (trade.Type == TradeType.Sell)
-                        { 
+                        {
                             dummyCoin.BuyPrice = (dummyCoin.BuyPrice * dummyCoin.Amount - trade.Price * trade.Amount) / (dummyCoin.Amount - trade.Amount);
                             dummyCoin.Amount -= trade.Amount;
                         }
@@ -79,25 +72,13 @@ namespace Wallet.Client.Services
 
         private async Task GetCurrentPrice()
         {
-            //Enumy CoinName są w tej samej kolejności co coingeckoId
-            for (int i = 0; i < Enum.GetNames(typeof(CoinName)).Length; i++)
+            var response = await _http.PostAsJsonAsync("api/coin", CoinList);
+
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                foreach (Coin coin in CoinList)
-                {
-                    if (coin.Name == (CoinName)i)
-                    {
-                        try
-                        {
-                            uriBuilder.Query = $"ids={coingeckoId[i]}&vs_currencies=usd";
-                            string currentPrice = await _http.GetStringAsync(uriBuilder.Uri);
-                            int pFrom = currentPrice.IndexOf("\"usd\":") + "\"usd\":".Length;
-                            int pTo = currentPrice.LastIndexOf("}") - 1;
-                            currentPrice = currentPrice.Substring(pFrom, pTo - pFrom).Replace('.', ',');
-                            coin.CurrentPrice = Double.Parse(currentPrice);
-                        }
-                        catch (Exception) {}
-                    }
-                }
+                CoinList = JsonConvert.DeserializeObject<List<Coin>>(await response.Content.ReadAsStringAsync());
+
+                Console.WriteLine(JsonConvert.SerializeObject(CoinList));
             }
         }
     }

@@ -1,9 +1,7 @@
-﻿using Wallet.Shared.Enums;
-using Wallet.Shared.Models;
+﻿using Blazored.Toast.Services;
 using System.Net.Http.Json;
-using Blazored.Toast.Services;
-using System.Transactions;
-using System.Net.Http;
+using Wallet.Shared.Enums;
+using Wallet.Shared.Models;
 
 namespace Wallet.Client.Services
 {
@@ -20,7 +18,7 @@ namespace Wallet.Client.Services
 
         public List<Trade> PartialTradeList { get; set; } = new List<Trade>();
         public List<Trade> Trades { get; set; } = new List<Trade>();
-        
+
 
         public async Task AddTradeAsync(Trade transaction)
         {
@@ -31,7 +29,7 @@ namespace Wallet.Client.Services
             }
             else
             {
-                _toastService.ShowSuccess($"Your {transaction.Name} transaction has been saved!", "SAVED!");
+                _toastService.ShowSuccess($"Your {transaction.Name} transaction has been saved!");
             }
         }
 
