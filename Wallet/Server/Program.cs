@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +8,12 @@ using Wallet.Server.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var keyVaultUrl = builder.Configuration["KeyVaultConfiguration:KeyVaultURL"];
+
+builder.Configuration.AddAzureKeyVault(
+    new Uri(keyVaultUrl),
+    new DefaultAzureCredential());
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
