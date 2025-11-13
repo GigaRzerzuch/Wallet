@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -46,7 +45,7 @@ namespace Wallet.Server.Services
         {
             if (await AccountCheck(user.Email))
             {
-                return new ServiceResponse<int>{Message = "User already exist.", Succes = false };
+                return new ServiceResponse<int> { Message = "User already exist.", Succes = false };
             }
 
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passswordSalt);

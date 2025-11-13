@@ -11,17 +11,27 @@ namespace Wallet.Server.Controllers;
 public class CoinController : ControllerBase
 {
     private readonly ICoinsService _coinsService;
+    private readonly ILogger<CoinController> _logger;
 
-    public CoinController(ICoinsService coinsService)
+    public CoinController(ICoinsService coinsService, ILogger<CoinController> logger)
     {
         _coinsService = coinsService;
+        _logger = logger;
     }
 
     [HttpPost]
     public async Task<IActionResult> GetCoins(List<Coin> coinList)
     {
-        var updatedList = await _coinsService.GetCurrentPrice(coinList);
+        try
+        {
+            var updatedList = await _coinsService.GetCurrentPrice(coinList);
+            return Ok(updatedList);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to fetch coins.", e.Message);
+            throw;
+        }
 
-        return Ok(updatedList);
     }
 }
