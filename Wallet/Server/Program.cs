@@ -12,6 +12,8 @@ builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCre
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var signingKey = builder.Configuration["AppSettings:Token"];
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -55,5 +57,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapFallbackToFile("index.html");
 app.Run();
