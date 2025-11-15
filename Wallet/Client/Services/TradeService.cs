@@ -49,5 +49,10 @@ namespace Wallet.Client.Services
             Trades = await _http.GetFromJsonAsync<List<Trade>>("api/trade");
             Trades = Trades.Where(trade => trade.Name == name).ToList();
         }
+
+        public async Task SentTradesAsync()
+        {
+            await _http.GetAsync($"api/coin/gettrades");
+        }
     }
 }

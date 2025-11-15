@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject ITradeService TradeService
 @using Blazored.Toast.Configuration
-
 
 <div class="page">
     <div class="sidebar">
@@ -12,6 +12,9 @@
              <AuthorizeView>
                 <Authorized>
                     <h1 class="text-center">Hi nibba, @context.User.Identity.Name. Welcome back</h1>
+                    <button title="Send trades" @onclick="SendTrades">
+                        Send
+                    </button>
                  </Authorized>
             </AuthorizeView>
         </div>
@@ -21,3 +24,9 @@
     </main>
 </div>
 <BlazoredToasts Position="ToastPosition.BottomRight" />
+@code {
+    public void SendTrades()
+    {
+        TradeService.SentTradesAsync();
+    }
+}
