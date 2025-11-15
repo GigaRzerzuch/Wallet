@@ -32,6 +32,20 @@ public class CoinController : ControllerBase
             _logger.LogError("Failed to fetch coins.", e.Message);
             throw;
         }
+    }
 
+    [HttpGet("gettrades")]
+    public async Task<IActionResult> GenerateTradesDocument()
+    {
+        try
+        {
+            await _coinsService.SendTradesMessage();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to generate trades message.", e.Message);
+            throw;
+        }
     }
 }

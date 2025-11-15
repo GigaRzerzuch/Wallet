@@ -1,4 +1,5 @@
 using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var keyVaultUrl = builder.Configuration["KeyVaultConfiguration:KeyVaultURL"];
 builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var serviceBusConnectionString = builder.Configuration.GetConnectionString("ServiceBusSend");
 var signingKey = builder.Configuration["AppSettings:Token"];
 
 builder.Services.AddEndpointsApiExplorer();
@@ -23,6 +25,7 @@ builder.Services.AddScoped<IAuthServerService, AuthServerService>();
 builder.Services.AddScoped<IUtilityService, UtilityService>();
 builder.Services.AddScoped<ICoinsService, CoinsService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton(new ServiceBusClient(serviceBusConnectionString));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

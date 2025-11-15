@@ -57,7 +57,6 @@ public class TradeController : ControllerBase
         }
     }
 
-
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemoveTrade(int id)
     {
